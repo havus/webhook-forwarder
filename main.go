@@ -16,9 +16,17 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	releaseMode := os.Getenv("ENV")
+
+	if releaseMode == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 
 	port := os.Getenv("PORT")
@@ -33,6 +41,7 @@ func main() {
 
 	r.POST("/google-chat", postGoogleChat)
 
+	fmt.Println("Server will run on PORT", port)
 	r.Run(fmt.Sprintf(":%s", port))
 }
 
